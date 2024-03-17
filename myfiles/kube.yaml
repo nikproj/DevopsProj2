@@ -1,0 +1,35 @@
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: devopsproj2
+  namespace: default
+  labels:
+    app: app1
+spec:
+  selector:                                           #kube automatically assign the names
+    matchLabels:
+      app: devopsproj2                                #name should match- pyapp
+  template:
+    metadata:
+     #name:                                           #it is already assigned
+     labels:
+       app: devopsproj2
+    spec:
+     containers:
+      - name: cont1
+        image: nikhiltr1/devopsproj2:latest
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: devopsproj2-svc
+  namespace: default
+  #labels: optional
+spec:
+  type: NodePort
+  selector:
+    app: devopsproj2                                    #Label name of the pods where you want to send traffic(instead of IP's)
+  ports:
+    - name: cont1port
+      port: 80                                        #Port of the image which is defined earlier
+      nodePort: 30023                                   #Ranges from 30000-32767

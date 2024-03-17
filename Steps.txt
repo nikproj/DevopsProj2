@@ -1,0 +1,42 @@
+Steps
+
+1. Terraform Script
+  -> terraform init
+  -> terraform apply https://github.com/Nikhil-tr/DevopsProj2/tree/main/myfiles/script
+  -> It deploys DEV-VPC with 1 PublicSubnet for Master and 3 PrivateSubnet for developers 
+  -> It deploys PROD-VPC with 2 PublicSubnet for LB and 3 PrivateSubnet for servers
+  -> It connects both vpc by peering and Dev-Pub1 subnet(Master) has access to all private-subnets
+  -> It Deploys Master Instance with Java,Jenkins,Docker,KubeMaster Installed in it
+  -> It Deploys 2 ProdServers in ProdVpc with DOcker and Kubeclient installed in it
+  -> It creates a target group and prod instances attached to it
+  -> It creates a LoadBalancer For Users to access
+
+2. Setup Kube Cluster
+  -> create token and add prod-server as kube-nodes
+
+3. Jenkins
+  -> Login and Installl all required Plugins
+  -> On Master (sudo su -, ssh-keygen, cd ~/.ssh)
+  -> Copy public key and paste on the authorized-keys
+  -> create a directory for jenkins to run (mkdir /root/jenkins, chmod 755 jenkins)
+
+4. Jenkins Agent
+  -> Add Node (/root/jenkins, host- privateip of master, creds- root privatekey(id_rsa))
+  -> create a global credentials with secret text , id(dockerhubpwd) and provide password of dockerhub
+
+5. Pipeline
+  -> Create a pipeline and run the script
+
+6. After first run, replace
+
+          stage('Deploy on production') {
+            steps {
+                sh 'kubectl delete daemonset devopsproj2'
+                sh 'kubectl delete service devopsproj2-svc'
+                sh 'kubectl apply -f $WORKSPACE/myfiles/kube.yaml'
+            }
+        } 
+
+7. Copy the dns name of loadbalancer and map it to the domain
+
+8. Static website is ready
